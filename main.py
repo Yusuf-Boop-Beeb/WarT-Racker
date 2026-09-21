@@ -7,6 +7,7 @@ app_id = Presence("1548728310979104878")
 app_id.connect()
 
 start_time = time.time()
+username = 'Yusuf#59'
 
 with open("units.csv", "r", encoding="utf-8-sig") as f:
     reader = csv.DictReader(f, delimiter=";")
@@ -20,6 +21,17 @@ def get_display_vehicle(codename):
     except KeyError:
        display_vehicle = units[codename + "_shop"]
     return display_vehicle
+
+def classify_msg(msg):
+    for verb in (" shot down "," destroyed "):
+        if verb in msg:
+            attacker, victim = msg.split(verb, 1)
+            if f"{username} (" in attacker:
+                return "kill"
+            if f"{username} (" in victim:
+                return "death"
+        return "other"
+    return "ignore"
 
 while True:
     try:
