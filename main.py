@@ -20,14 +20,14 @@ def main():
         actual_mode = raw_mode
         vehicle_name = None
 
-        if mode in ("testDrive", "testFlight", "inAir", "inGround"):
+        if raw_mode in ("testDrive", "testFlight", "inAir", "inGround"):
             try:
                 vehicle_codename = requests.get("http://localhost:8111/indicators", timeout=2).json().get("type")
                 vehicle_name = get_display_vehicle(vehicle_codename)
             except requests.RequestException:
                 vehicle_name = "Deciding"
 
-        update_status(actual_mode, vehicle_name, start_time)
+        update_status(raw_mode, vehicle_name, START_TIME)
 
         time.sleep(1)
 
