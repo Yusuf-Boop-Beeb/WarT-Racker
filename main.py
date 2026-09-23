@@ -1,44 +1,15 @@
 import requests
 import time
 from pypresence import Presence
-import csv
 
-app_id = Presence("1548728310979104878")
-app_id.connect()
+rpc = Presence("1548728310979104878")
+rpc.connect()
 
-start_time = time.time()
-username = 'Yusuf#59'
-
-with open("units.csv", "r", encoding="utf-8-sig") as f:
-    reader = csv.DictReader(f, delimiter=";")
-    units = {row["<ID|readonly|noverify>"]: row["<English>"] for row in reader}
-
-def get_display_vehicle(codename):
-    codename = codename.split("/")[-1]
-    try:
-       display_vehicle = units[codename]
-
-    except KeyError:
-       display_vehicle = units[codename + "_shop"]
-    return display_vehicle
-
-def classify_msg(msg):
-    for verb in (" shot down "," destroyed "):
-        if verb in msg:
-            attacker, victim = msg.split(verb, 1)
-            if f"{username} (" in attacker:
-                return "kill"
-            if f"{username} (" in victim:
-                return "death"
-        return "other"
-    return "ignore"
-
-while True:
     try:
         info = requests.get("http://localhost:8111")
     except requests.exceptions.ConnectionError:
-        app_id.update(
-                    state="We might be saved 🥹",
+        rpc.update(
+                    state="WarThunder is not launched",
                     details="Game is not running"
                     )
     else:
@@ -46,7 +17,7 @@ while True:
         try:
             obj_valid = requests.get("http://localhost:8111/mission.json").json()["objectives"]
         except requests.exceptions.JSONDecodeError:
-            app_id.update(
+            rpc.update(
                             details="In Hanger",
                             state="Awaiting Match, I fucking hate this shit"
                             )
@@ -54,7 +25,7 @@ while True:
         try:
             map_valid = requests.get("http://localhost:8111/map_info.json").json()["valid"]
         except requests.exceptions.JSONDecodeError:
-            app_id.update(
+            rpc.update(
                             details="In Hanger",
                             state="Awaiting Match, I fucking hate this shit"
                             )
@@ -75,14 +46,14 @@ while True:
 
                 
 
-                    app_id.update(
+                    rpc.update(
                         start=start_time,
                         details="Test Flying", 
                         state=f"Test Flying: {get_display_vehicle(indicators['type'])} || Current Speed = {state['TAS, km/h']} KM/H"
                         )
                 else:
 
-                    app_id.update(
+                    rpc.update(
                         start=start_time,
                         details="Test Driving",
                         state=f"Driving: {get_display_vehicle(indicators['type'])}"
@@ -94,7 +65,7 @@ while True:
                 # In a real match
                 if state["valid"] == True:
 
-                    app_id.update(
+                    rpc.update(
                         start=start_time,
                         details="In Air Battle", 
                         state=f"Using: {get_display_vehicle(indicators['type'])} || Current Speed = {state['TAS, km/h']} KM/H"
@@ -105,7 +76,7 @@ while True:
 
                 else:
 
-                    app_id.update(
+                    rpc.update(
                         start=start_time,
                         details="In Ground Battle",
                         state=f"Using: {get_display_vehicle(indicators['type'])}"
@@ -116,7 +87,7 @@ while True:
 
 
         else:
-            app_id.update(
+            rpc.update(
                 start=start_time,
                 details="In Hanger",
                 state="Awaiting Match, I fucking hate this shit"
