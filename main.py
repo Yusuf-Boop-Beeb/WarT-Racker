@@ -1,98 +1,68 @@
 import requests
 import time
 from pypresence import Presence
+from mode_detector import get_mode
+from vehicle_detector import get_display_vehicle
 
 rpc = Presence("1548728310979104878")
 rpc.connect()
 
-    try:
-        info = requests.get("http://localhost:8111")
-    except requests.exceptions.ConnectionError:
-        rpc.update(
-                    state="WarThunder is not launched",
-                    details="Game is not running"
-                    )
-    else:
+def main():
+    while True:
 
-        try:
-            obj_valid = requests.get("http://localhost:8111/mission.json").json()["objectives"]
-        except requests.exceptions.JSONDecodeError:
-            rpc.update(
-                            details="In Hanger",
-                            state="Awaiting Match, I fucking hate this shit"
-                            )
+        mode = get_mode()
+        vehicle_name = None
 
-        try:
-            map_valid = requests.get("http://localhost:8111/map_info.json").json()["valid"]
-        except requests.exceptions.JSONDecodeError:
-            rpc.update(
-                            details="In Hanger",
-                            state="Awaiting Match, I fucking hate this shit"
-                            )
+        if mode in ("testDrive", "testFlight", "inAir", "inGround"):
 
-        state = requests.get("http://localhost:8111/state").json()
-        indicators = requests.get("http://localhost:8111/indicators").json()
+            vehicle_codename = requests.get("http://localhost:8111/indicators", timeout=2).json().get("type")
 
-        # Map == False when in hanger only
-        # objectives == False when not in a real match (In test drive and hanger)
-        # state == True only in air battles
-        # I can say if objectives == true and state == false then its groub battles 100%
-
-        if map_valid == True:
-
-            if obj_valid is None:
-
-                if state["valid"] == True:
-
-                
-
-                    rpc.update(
-                        start=start_time,
-                        details="Test Flying", 
-                        state=f"Test Flying: {get_display_vehicle(indicators['type'])} || Current Speed = {state['TAS, km/h']} KM/H"
-                        )
-                else:
-
-                    rpc.update(
-                        start=start_time,
-                        details="Test Driving",
-                        state=f"Driving: {get_display_vehicle(indicators['type'])}"
-                    )
-                #Set status to in test drive and update it cosntatly
-                #fetch indicators to check vehicle I'm test driving
-
+            if vehicle_codename is not None:
+                vehicle_name = get_display_vehicle(vehicle_codename)
             else:
-                # In a real match
-                if state["valid"] == True:
-
-                    rpc.update(
-                        start=start_time,
-                        details="In Air Battle", 
-                        state=f"Using: {get_display_vehicle(indicators['type'])} || Current Speed = {state['TAS, km/h']} KM/H"
-                        )
-                    #Set status to air battles
-                    #fetch indicators to indicate which plane
-                    #Count kills maybe indicate altitutde and speed
-
-                else:
-
-                    rpc.update(
-                        start=start_time,
-                        details="In Ground Battle",
-                        state=f"Using: {get_display_vehicle(indicators['type'])}"
-                                )
-                    #Set status to ground battles
-                    #fetch indicators to indicate which tank
-                    #Count kills and deaths 
+                vehicle_name = "Deciding"
 
 
-        else:
-            rpc.update(
-                start=start_time,
-                details="In Hanger",
-                state="Awaiting Match, I fucking hate this shit"
-                )
-            #Update status to in hanger and not in a match
+        update_status(mode, vehicle_name)
 
+        time.sleep(15)
 
-    time.sleep(14)
+def update_status(gameStatus, current_vehicle=None):
+
+    if gameStatus == "notInGame":
+        rpc.update(
+            details="Game is not launched",
+            state="Warthunder is not running"
+        )
+        
+    elif gameStatus == "inAir":
+        rpc.update(
+            details="In Air Battle",
+            state=f"Flying: {current_vehicle}"
+        )
+
+    elif gameStatus == "inGround":
+        rpc.update(
+              details="In Ground Battle",
+              state=f"Using: {current_vehicle}"
+        )
+
+    elif gameStatus == "testFlight":
+        rpc.update(
+            details="In Test Flight",
+            state=f"Flying: {current_vehicle}"
+        )
+
+    elif gameStatus == "testDrive":
+      rpc.update(
+            details="In Test Drive",
+            state=f"Driving: {current_vehicle}"
+        )
+      
+    else:
+        rpc.update(
+            details="Loading"
+        )
+
+if __name__ == "__main__":
+    main()        
