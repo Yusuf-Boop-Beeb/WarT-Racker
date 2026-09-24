@@ -1,5 +1,6 @@
-username = 'Yusuf#59'
-kill, death = 0, 0
+import requests
+username = "Yusuf#59"
+
 def classify_msg(msg):
     for verb in (" shot down "," destroyed "):
         if verb in msg:
@@ -11,10 +12,11 @@ def classify_msg(msg):
             return "other"
     return "ignore"
 
-def track_kd(input):
-    global kill, death
-    kill += 1 if input == "kill" else 0
-    death += 1 if input == "death" else 0
-    k/d = float(kill/death)
-    if input == "other" or "ignore":
-        pass
+def track_kd(classification):
+    global kill, death, kd_ratio
+    kill += 1 if classification == "kill" else 0
+    death += 1 if classification == "death" else 0
+    if death > 0:
+        kd_ratio = float(kill/death)
+    else:
+        kd_ratio = kill

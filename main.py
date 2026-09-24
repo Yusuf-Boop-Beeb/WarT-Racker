@@ -3,35 +3,34 @@ import time
 from pypresence import Presence
 from mode_detector import get_mode
 from vehicle_detector import get_display_vehicle
+import kill_parser
 
 
 rpc = Presence("1548728310979104878")
 rpc.connect()
 
 START_TIME = time.time()
+kill, death, kd_ratio = 0, 0, 0
 
 def main():
     while True:
         
-        raw_mode = get_mode()
+        mode = get_mode()
         
-
-
-        actual_mode = raw_mode
         vehicle_name = None
 
-        if raw_mode in ("testDrive", "testFlight", "inAir", "inGround"):
-            try:
-                vehicle_codename = requests.get("http://localhost:8111/indicators", timeout=2).json().get("type")
-                vehicle_name = get_display_vehicle(vehicle_codename)
-            except requests.RequestException:
-                vehicle_name = "Deciding"
+        messege = requests.get("http://localhost:8111/hudmsg?lastEvt=0&lastDmg=0")
+        kill_parser.track_kd(kill_parser.classify_msg(messege))
 
-        update_status(raw_mode, vehicle_name, START_TIME)
+        if mode in ("testDrive", "testFlight", "inAir", "inGround"):
+            vehicle_codename = requests.get("http://localhost:8111/indicators", timeout=2).json().get("type")
+            vehicle_name = get_display_vehicle(vehicle_codename)
+
+        update_status(mode, vehicle_name, START_TIME, kill, death)
 
         time.sleep(1)
 
-def update_status(gameStatus, current_vehicle=None, time=None):
+def update_status(gameStatus, current_vehicle=None, time=None, kills=0, deaths=0):
 
     if gameStatus == "notInGame":
         rpc.update(
@@ -47,14 +46,14 @@ def update_status(gameStatus, current_vehicle=None, time=None):
     elif gameStatus == "inAir":
         rpc.update(
             details="In Air Battle",
-            state=f"Flying: {current_vehicle}",
+            state=f"Flying: {current_vehicle}, Kills:{kills}, Deaths:{deaths}",
             start=time
         )
 
     elif gameStatus == "inGround":
         rpc.update(
               details="In Ground Battle",
-              state=f"Using: {current_vehicle}",
+              state=f"Using: {current_vehicle}, Kills:{kills}, Deaths:{deaths}",
               start=time
         )
 
