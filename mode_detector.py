@@ -9,10 +9,6 @@ GRACE_PERIOD_SECONDS = 20
 _map_valid_since = None
 _was_map_valid = False
 
-state = requests.get("http://localhost:8111/state", timeout=2).json()
-
-
-
 def get_mode(parameters=None):
 
     global _map_valid_since, _was_map_valid
@@ -25,7 +21,7 @@ def get_mode(parameters=None):
         return "notInGame"
 
     try:
-        map_info = requests.get("http://localhost:8111/map_info.json", timeout=2).json()
+        map_info = requests.get("http://localhost:8111/map_info.json", timeout=5).json()
     except requests.RequestException:
         _map_valid_since = None
         _was_map_valid = False
@@ -42,11 +38,11 @@ def get_mode(parameters=None):
     _was_map_valid = map_valid
 
     try:
-        mission_valid = requests.get("http://localhost:8111/mission.json", timeout=2).json()["objectives"] is not None
+        mission_valid = requests.get("http://localhost:8111/mission.json", timeout=5).json()["objectives"] is not None
     except requests.RequestException:
         mission_valid = False
 
-    state = requests.get("http://localhost:8111/state", timeout=2).json()
+    state = requests.get("http://localhost:8111/state", timeout=5).json()
     state_valid = state.get("valid", False)
 
     if mission_valid:
