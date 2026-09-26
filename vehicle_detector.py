@@ -1,10 +1,20 @@
 import csv
+import requests
+
+def get_codename():
+   try:
+      codename = requests.get("http://localhost:8111/indicators", timeout=5).json().get("type", None)
+   except requests.RequestException:
+      return None
+   return codename
 
 with open("units.csv", "r", encoding="utf-8-sig") as f:
     reader = csv.DictReader(f, delimiter=";")
     units = {row["<ID|readonly|noverify>"]: row["<English>"] for row in reader}
 
 def get_display_vehicle(codename):
+    if codename is None:
+        return "Unknown Vehicle"
     codename = codename.split("/")[-1]
     try:
        display_vehicle = units[codename]

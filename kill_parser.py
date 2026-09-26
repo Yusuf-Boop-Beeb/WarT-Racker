@@ -1,6 +1,9 @@
 import requests
-username = "Yusuf#59"
 
+username = "Yusuf#59"
+kill, death, kd_ratio = 0, 0, 0
+
+    
 def classify_msg(msg):
     for verb in (" shot down "," destroyed "):
         if verb in msg:
@@ -20,3 +23,24 @@ def track_kd(classification):
         kd_ratio = float(kill/death)
     else:
         kd_ratio = kill
+
+def get_id_and_process_messages(id, process=True):
+    try:
+
+        messages = requests.get(
+            "http://localhost:8111/hudmsg",
+            params={"lastEvt": 0, "lastDmg": last_id},
+            timeout=5
+        ).json().get("damage", [])
+
+    except requests.exceptions.RequestException:
+        return last_id
+
+    for msg in messages:
+        last_id = max(last_id, msg["id"])
+        if process:
+            classification = classify_msg(msg["msg"])
+            track_kd(classification)
+
+    return last_id
+
