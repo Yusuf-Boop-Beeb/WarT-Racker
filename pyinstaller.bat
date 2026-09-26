@@ -1,0 +1,1 @@
+python -m PyInstaller --onefile --name WT-Tracker --distpath exestuff/dist --workpath exestuff/build --specpath exestuff --add-data "units.csv;." --icon "Black-and-White-Modern-Personal-Logo-2.ico" main.py
