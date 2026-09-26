@@ -1,6 +1,16 @@
 import csv
 import requests
 
+import sys
+import os
+
+def resource_path(relative_path):
+    if hasattr(sys, '_MEIPASS'):
+        base_path = sys._MEIPASS
+    else:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
+
 def get_codename():
    try:
       codename = requests.get("http://localhost:8111/indicators", timeout=5).json().get("type", None)
@@ -8,7 +18,7 @@ def get_codename():
       return None
    return codename
 
-with open("units.csv", "r", encoding="utf-8-sig") as f:
+with open(resource_path("units.csv"), "r", encoding="utf-8-sig") as f:
     reader = csv.DictReader(f, delimiter=";")
     units = {row["<ID|readonly|noverify>"]: row["<English>"] for row in reader}
 
