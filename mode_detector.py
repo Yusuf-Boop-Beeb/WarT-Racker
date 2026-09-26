@@ -4,7 +4,7 @@ import time
 # objectives == False when not in a real match (In test drive and hanger)
 # state == True only in air battles
 # I can say if objectives == true and state == false then its groub battles 100%
-GRACE_PERIOD_SECONDS = 20
+GRACE_PERIOD_SECONDS = 10
 
 _map_valid_since = None
 _was_map_valid = False

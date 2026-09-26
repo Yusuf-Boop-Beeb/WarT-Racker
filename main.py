@@ -11,7 +11,7 @@ rpc.connect()
 def main():
 
     START_TIME = time.time()
-
+    vehicle_name = None
     last_id = 0
     previous_get_mode_call = None #This checks wheather or not this is the first time I join a gamemode or if it's subsequent calls
 
