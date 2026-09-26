@@ -1,15 +1,9 @@
 import csv
 import requests
 
-import sys
-import os
+import pathlib
 
-def resource_path(relative_path):
-    if hasattr(sys, '_MEIPASS'):
-        base_path = sys._MEIPASS
-    else:
-        base_path = os.path.abspath(".")
-    return os.path.join(base_path, relative_path)
+path_to_csv = pathlib.Path(r"D:\Code Projects\.vscode\wtlproject\units.csv")
 
 def get_codename():
    try:
@@ -18,7 +12,7 @@ def get_codename():
       return None
    return codename
 
-with open(resource_path("units.csv"), "r", encoding="utf-8-sig") as f:
+with open(path_to_csv , "r", encoding="utf-8-sig") as f:
     reader = csv.DictReader(f, delimiter=";")
     units = {row["<ID|readonly|noverify>"]: row["<English>"] for row in reader}
 
