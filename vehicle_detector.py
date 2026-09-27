@@ -1,5 +1,8 @@
 import csv
 import requests
+import pathlib
+
+path_to_csv = pathlib.Path(__file__).parent / "units.csv"
 
 def get_codename():
    try:
@@ -8,7 +11,7 @@ def get_codename():
       return None
    return codename
 
-with open("units.csv", "r", encoding="utf-8-sig") as f:
+with open(path_to_csv,"r", encoding="utf-8-sig") as f:
     reader = csv.DictReader(f, delimiter=";")
     units = {row["<ID|readonly|noverify>"]: row["<English>"] for row in reader}
 

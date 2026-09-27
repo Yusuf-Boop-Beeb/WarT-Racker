@@ -1,6 +1,7 @@
 import requests
+from config import get_username
 
-username = "Yusuf#59"
+username = get_username()
 kill, death, kd_ratio = 0, 0, 0
 
     
@@ -29,18 +30,18 @@ def get_id_and_process_messages(id, process=True):
 
         messages = requests.get(
             "http://localhost:8111/hudmsg",
-            params={"lastEvt": 0, "lastDmg": last_id},
+            params={"lastEvt": 0, "lastDmg": id},
             timeout=5
         ).json().get("damage", [])
 
     except requests.exceptions.RequestException:
-        return last_id
+        return id
 
     for msg in messages:
-        last_id = max(last_id, msg["id"])
+        id = max(id, msg["id"])
         if process:
             classification = classify_msg(msg["msg"])
             track_kd(classification)
 
-    return last_id
+    return id
 
