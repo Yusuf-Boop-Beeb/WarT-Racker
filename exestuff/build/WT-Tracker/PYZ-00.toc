@@ -315,6 +315,7 @@
   ('concurrent.interpreters._queues',
    'C:\\Users\\youss\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\concurrent\\interpreters\\_queues.py',
    'PYMODULE'),
+  ('config', 'D:\\Code Projects\\.vscode\\wtlproject\\config.py', 'PYMODULE'),
   ('configparser',
    'C:\\Users\\youss\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\configparser.py',
    'PYMODULE'),
