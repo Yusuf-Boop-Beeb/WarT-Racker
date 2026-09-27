@@ -1,9 +1,17 @@
 import csv
 import requests
-
 import pathlib
+import sys
 
-path_to_csv = pathlib.Path(r"D:\Code Projects\.vscode\wtlproject\units.csv")
+def resource_path(filename):
+    if getattr(sys, 'frozen', False):
+        base_path = pathlib.Path(sys._MEIPASS)
+    else:
+        base_path = pathlib.Path(__file__).parent
+    return base_path / filename
+
+
+path_to_csv = resource_path("units.csv")
 
 def get_codename():
    try:
