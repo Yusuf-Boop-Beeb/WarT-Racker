@@ -67,14 +67,14 @@ def update_status(gameStatus, current_vehicle=None, time=None, kills=0, deaths=0
     elif gameStatus == "inAir":
         rpc.update(
             details="In Air Battle",
-            state=f"Flying: {current_vehicle}, Kills:{kills}, Deaths:{deaths}",
+            state=f"Flying: {current_vehicle}, Kills:{kills} , Deaths:{deaths} ",
             start=time
         )
 
     elif gameStatus == "inGround":
         rpc.update(
               details="In Ground Battle",
-              state=f"Using: {current_vehicle}, Kills:{kills}, Deaths:{deaths}",
+              state=f"Using: {current_vehicle}, Kills:{kills} , Deaths:{deaths} ",
               start=time
         )
 

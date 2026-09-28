@@ -6,6 +6,13 @@ import time
 # I can say if objectives == true and state == false then its groub battles 100%
 GRACE_PERIOD_SECONDS = 10
 
+TEST_FLIGHT_MAP_SIZES = [[ 52719.39843750, 55385.300781250 ], 
+                         [ 57584.113281250, 64194.19531250 ],
+                         [ 65536.0, 65536.0 ],
+                         [ 78411.52343750, 47450.30468750 ],
+                         [ 70825.343750, 42515.86718750 ],
+                         [ 81636.13281250, 31033.503906250 ]]
+
 _map_valid_since = None
 _was_map_valid = False
 
@@ -46,9 +53,13 @@ def get_mode(parameters=None):
     state_valid = state.get("valid", False)
 
     if mission_valid:
-        map_valid_since = None
+        _map_valid_since = None
         return "inAir" if state_valid else "inGround"
     
+    if state_valid and not mission_valid:
+        if map_info["grid_size"] not in TEST_FLIGHT_MAP_SIZES:
+            return "inAir"
+        
     if _map_valid_since is None:
         _map_valid_since = time.time()
 
